@@ -9,71 +9,71 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import model.Dueno;
+import model.Veterinario;
 import util.ConexionDB;
 
 /**
  *
- * @author camper
+ * @author sd
  */
-public class DuenoDAO {
-    
-    // metodo de agregar
-    public void agregarDueno(Dueno d){
-        String sql = "INSERT INTO duenos (nombre_completo, documento_identidad, direccion, telefono, email, contacto_emergencia)"
-                + "VALUES (?,?,?,?,?,?)";
+public class VeterinarioDAO {
+      // metodo de agregar
+    public void agregarVeterinario(Veterinario v){
+        String sql = "INSERT INTO veterinarios (nombre_completo, documento_identidad, licencia_profesional, especialidad, telefono, email, fecha_contratacion)"
+                + "VALUES (?,?,?,?,?,?,?)";
         try (Connection con = ConexionDB.getConexion();
                 PreparedStatement ps = con.prepareStatement(sql)){
-            ps.setString(1, d.getNombreCompleto());
-            ps.setString(2, d.getDocumentoIdentidad());
-            ps.setString(3, d.getDireccion());
-            ps.setString(4, d.getTelefono());
-            ps.setString(5, d.getEmail());
-            ps.setString(6, d.getContactoEmergencia());
+            ps.setString(1, v.getNombreCompleto());
+            ps.setString(2, v.getDocumentoIdentidad());
+            ps.setString(3, v.getLicenciaProfesional());
+            ps.setString(4, v.getEspecialidad());
+            ps.setString(5, v.getTelefono());
+            ps.setString(6, v.getEmail());
+            ps.setDate(7, v.getFechaContratacion());
             
             ps.executeUpdate();
             System.out.println("Registro exitoso!!!!!");
             
         } catch (SQLException e) {
-            System.out.println("No se registro el dueño"+e.getMessage());
+            System.out.println("No se registro el Veterinario "+e.getMessage());
         }
         
     }
-    // metodo para listar
-   public List<Dueno> ListarDuenos (){
-        List<Dueno>  lista = new ArrayList<>();
-        String sql = "SELECT * FROM duenos";
+    
+        // metodo para listar
+    public List<Veterinario> ListarVeterinarios (){
+        List<Veterinario>  listav = new ArrayList<>();
+        String sql = "SELECT * FROM veterinarios";
         try (Connection con = ConexionDB.getConexion();
                 Statement st = con.createStatement();
                 ResultSet rs = st.executeQuery(sql)){
             while (rs.next()){
-                Dueno d = new Dueno(
+                Veterinario v = new Veterinario(
                 rs.getInt("id"),
                 rs.getString("nombre_completo"),
                 rs.getString("documento_identidad"),
-                rs.getString("direccion"),
+                rs.getString("licencia_profesional"),
+                rs.getString("especialidad"),
                 rs.getString("telefono"),
                 rs.getString("email"),
-                rs.getString("contacto_emergencia"),
-                rs.getTimestamp("fecha_registro").toLocalDateTime(),
+                rs.getDate("fecha_contratacion"),
                 rs.getBoolean("activo")
                 );
-                lista.add(d);
+                listav.add(v);
             }
             
         } catch (SQLException e) {
-            System.out.println("Error al listar dueños"+ e.getMessage());
+            System.out.println("Error al listar Veterinarios "+ e.getMessage());
         }
-        return lista;
+        return listav;
     }
     
-   //metodo para buscar por id
-    public Dueno buscarPorId(int id) {
-        Dueno dueno = null;
-        String sql = "SELECT * FROM duenos WHERE id = ?";
+       //metodo para buscar por id
+    public Veterinario buscarPorId(int id) {
+        Veterinario v = null;
+        String sql = "SELECT * FROM veterinarios WHERE id = ?";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -82,15 +82,15 @@ public class DuenoDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                dueno = new Dueno(
+                v = new Veterinario(
                     rs.getInt("id"),
                     rs.getString("nombre_completo"),
                     rs.getString("documento_identidad"),
-                    rs.getString("direccion"),
+                    rs.getString("licencia_profesional"),
+                    rs.getString("especialidad"),
                     rs.getString("telefono"),
                     rs.getString("email"),
-                    rs.getString("contacto_emergencia"),
-                    rs.getTimestamp("fecha_registro").toLocalDateTime(),
+                    rs.getDate("fecha_contratacion"),
                     rs.getBoolean("activo")
                 );
             }
@@ -99,14 +99,12 @@ public class DuenoDAO {
             System.out.println("Error al buscar dueño por ID: " + e.getMessage());
         }
 
-        return dueno;
+        return v;
     }
-
-
-   
-    // metodo para actualizar estado
+    
+        // metodo para actualizar estado
     public void actualizarEstado(int id){
-        String sql = "UPDATE duenos SET activo = NOT activo WHERE id = ?";
+        String sql = "UPDATE veterinarios SET activo = NOT activo WHERE id = ?";
         
         try (Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql)){
@@ -116,7 +114,7 @@ public class DuenoDAO {
             if(filasActualizadas > 0){
                 System.out.println("Estado actualizado correctamente");
             }else{
-                System.out.println("No se encontro el dueño");
+                System.out.println("No se encontro el Veterinario");
             }
         } catch (SQLException e) {
             System.out.println("Error al actualizar estado"+ e.getMessage());

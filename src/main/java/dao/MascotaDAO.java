@@ -27,7 +27,7 @@ public class MascotaDAO {
     //metodo para registrar mascotas
     public void agregarMascota(Mascota m){
         String sql = "INSERT INTO mascotas(dueno_id, nombre, raza_id, fecha_nacimiento, sexo, peso_actual, micro_chip, tatuaje, url_foto,"
-                + "alergias, condiciones_preexistentes) VALUES (?,?,?,?,?,?,?,?,?,?,? )";
+                + " alergias, condiciones_preexistentes) VALUES (?,?,?,?,?,?,?,?,?,?,? )";
         
         try(Connection con = ConexionDB.getConexion();
                 PreparedStatement ps = con.prepareStatement(sql)){
