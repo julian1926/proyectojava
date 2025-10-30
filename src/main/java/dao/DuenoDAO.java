@@ -70,6 +70,40 @@ public class DuenoDAO {
         return lista;
     }
     
+   //metodo para buscar por id
+    public Dueno buscarPorId(int id) {
+        Dueno dueno = null;
+        String sql = "SELECT * FROM duenos WHERE id = ?";
+
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                dueno = new Dueno(
+                    rs.getInt("id"),
+                    rs.getString("nombre_completo"),
+                    rs.getString("documento_identidad"),
+                    rs.getString("direccion"),
+                    rs.getString("telefono"),
+                    rs.getString("email"),
+                    rs.getString("contacto_emergencia"),
+                    rs.getTimestamp("fecha_registro").toLocalDateTime(),
+                    rs.getBoolean("activo")
+                );
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al buscar dueño por ID: " + e.getMessage());
+        }
+
+        return dueno;
+    }
+
+
+   
     // metodo para actualizar estado
     public void actualizarEstado(int id){
         String sql = "UPDATE duenos SET activo = NOT activo WHERE id = ?";

@@ -5,7 +5,6 @@
 package controller;
 
 import dao.DuenoDAO;
-import java.time.LocalDateTime;
 import java.util.List;
 import model.Dueno;
 
@@ -32,7 +31,13 @@ public class DuenoController {
         return duenodao.ListarDuenos();
     }
     
+    //metodo para actualizar estado
     public void actualizarEstado(int id){
         duenodao.actualizarEstado(id);
+    }
+    
+    //metodo para buscar dueño por id
+    public Dueno buscarPorId(int id){
+        return duenodao.buscarPorId(id);
     }
 }

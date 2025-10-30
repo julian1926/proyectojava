@@ -7,6 +7,7 @@ package model;
 import enums.Sexo;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.sql.Date;
 
 /**
  *
@@ -18,7 +19,7 @@ public class Mascota {
     private int dueno_id;
     private String nombre;
     private int raza_id;
-    private LocalDate fecha_nacimiento;
+    private Date fecha_nacimiento;
     private Sexo sexo;
     private double peso_actual;
     private String microchip;
@@ -34,7 +35,7 @@ public class Mascota {
     private String nombre_raza;
     
     //constructor completo
-    public Mascota(int id, int dueno_id, String nombre, int raza_id, LocalDate fecha_nacimiento, Sexo sexo, double peso_actual,
+    public Mascota(int id, int dueno_id, String nombre, int raza_id, Date fecha_nacimiento, Sexo sexo, double peso_actual,
             String microchip, String tatuaje, String url_foto, String alergias, String condiciones_preexistentes, LocalDateTime fecha_registro, boolean activo){
         
         this.id = id;
@@ -54,7 +55,7 @@ public class Mascota {
     }
     
     //constructor sin ID
-    public Mascota(int dueno_id, String nombre, int raza_id, LocalDate fecha_nacimiento, Sexo sexo, double peso_actual,
+    public Mascota(int dueno_id, String nombre, int raza_id, Date fecha_nacimiento, Sexo sexo, double peso_actual,
            String microchip, String tatuaje, String url_foto, String alergias, String condiciones_preexistentes, LocalDateTime fecha_registro, boolean activo){
      
         this.dueno_id = dueno_id;
@@ -80,7 +81,7 @@ public class Mascota {
     public int getDueno_id(){return dueno_id;}
     public String getNombre(){return nombre;}
     public int getRaza_id(){return raza_id;}
-    public LocalDate getFecha_nacimiento(){return fecha_nacimiento;}
+    public Date getFecha_nacimiento(){return fecha_nacimiento;}
     public Sexo getSexo(){return sexo;}
     public double getPeso_actual(){return peso_actual;}
     public String getMicrochip(){return microchip;}
@@ -107,11 +108,5 @@ public class Mascota {
     //actualizar estado
     public void setIs_activo(boolean activo){
         this.activo = activo;  
-    }
-    
-    
-    
-    
-    
-    
+    }   
 }
