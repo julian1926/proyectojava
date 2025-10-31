@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 import model.Inventario;
 import model.ProductoTipo;
+import model.Provedor;
 
 public class InventarioVIEW {
     private InventarioController controller;
@@ -93,84 +94,98 @@ public class InventarioVIEW {
     }
     
     private void agregarProducto() {
-        System.out.println("\n--- AGREGAR NUEVO PRODUCTO AL INVENTARIO ---");
-        
-        // Mostrar tipos de producto disponibles
-        System.out.println("\n--- TIPOS DE PRODUCTO DISPONIBLES ---");
-        List<ProductoTipo> tipos = tipoController.listarProductoTipos();
-        if (tipos.isEmpty()) {
-            System.out.println("No hay tipos de producto registrados. Debe crear tipos primero.");
-            return;
-        }
-        
-        for (ProductoTipo tipo : tipos) {
-            System.out.println("ID: " + tipo.getId() + " - " + tipo.getNombre() + 
-                             " - " + tipo.getDescripcion());
-        }
-        
-        System.out.print("\nSeleccione el ID del tipo de producto: ");
-        int tipoId = sc.nextInt();
-        sc.nextLine();
-        
-        // Validar que el tipo existe
-        ProductoTipo tipoSeleccionado = tipoController.buscarPorId(tipoId);
-        if (tipoSeleccionado == null) {
-            System.out.println("Error: El ID de tipo de producto no existe.");
-            return;
-        }
-        
-        System.out.println("Tipo seleccionado: " + tipoSeleccionado.getNombre());
-        
-        System.out.print("Nombre del producto: ");
-        String nombre = sc.nextLine();
-        
-        System.out.print("Descripción: ");
-        String descripcion = sc.nextLine();
-        
-        System.out.print("Fabricante: ");
-        String fabricante = sc.nextLine();
-        
-        System.out.print("ID del proveedor (0 si no tiene): ");
-        int proveedorId = sc.nextInt();
-        sc.nextLine();
-        
-        System.out.print("Número de lote: ");
-        String lote = sc.nextLine();
-        
-        System.out.print("Cantidad en stock: ");
-        int stock = sc.nextInt();
-        
-        System.out.print("Stock mínimo para alerta: ");
-        int stockMinimo = sc.nextInt();
-        sc.nextLine();
-        
-        System.out.print("Unidad de medida: ");
-        String unidad = sc.nextLine();
-        
-        System.out.print("Fecha de vencimiento (YYYY-MM-DD, enter para omitir): ");
-        String fechaVencStr = sc.nextLine();
-        LocalDate fechaVencimiento = fechaVencStr.isEmpty() ? null : LocalDate.parse(fechaVencStr);
-        
-        System.out.print("Precio de compra: ");
-        double precioCompra = sc.nextDouble();
-        
-        System.out.print("Precio de venta: ");
-        double precioVenta = sc.nextDouble();
-        
-        System.out.print("¿Requiere receta? (true/false): ");
-        boolean requiereReceta = sc.nextBoolean();
-        sc.nextLine();
+     System.out.println("\n--- AGREGAR NUEVO PRODUCTO AL INVENTARIO ---");
 
-        LocalDateTime fechaRegistro = LocalDateTime.now();
-        boolean activo = true;
-        
-        Inventario inv = new Inventario(nombre, tipoId, descripcion, fabricante, 
-                                      proveedorId == 0 ? null : proveedorId, lote, 
-                                      stock, stockMinimo, unidad, fechaVencimiento, 
-                                      precioCompra, precioVenta, requiereReceta, 
-                                      activo, fechaRegistro);
-        controller.agregarInventario(inv);
-    }
+     // Mostrar tipos de producto disponibles
+     System.out.println("\n--- TIPOS DE PRODUCTO DISPONIBLES ---");
+     List<ProductoTipo> tipos = tipoController.listarProductoTipos();
+     if (tipos.isEmpty()) {
+         System.out.println("No hay tipos de producto registrados. Debe crear tipos primero.");
+         return;
+     }
+
+     for (ProductoTipo tipo : tipos) {
+         System.out.println("ID: " + tipo.getId() + " - " + tipo.getNombre() + 
+                          " - " + tipo.getDescripcion());
+     }
+
+     System.out.print("\nSeleccione el ID del tipo de producto: ");
+     int tipoId = sc.nextInt();
+     sc.nextLine();
+
+     // Validar que el tipo existe
+     ProductoTipo tipoSeleccionado = tipoController.buscarPorId(tipoId);
+     if (tipoSeleccionado == null) {
+         System.out.println("Error: El ID de tipo de producto no existe.");
+         return;
+     }
+
+     System.out.println("Tipo seleccionado: " + tipoSeleccionado.getNombre());
+
+     System.out.print("Nombre del producto: ");
+     String nombre = sc.nextLine();
+
+     System.out.print("Descripción: ");
+     String descripcion = sc.nextLine();
+
+     System.out.print("Fabricante: ");
+     String fabricante = sc.nextLine();
+
+     // CORRECCIÓN: Mostrar proveedores disponibles
+     System.out.println("\n--- PROVEEDORES REGISTRADOS ---");
+     // Necesitas importar el controller de proveedores
+     controller.ProvedorController provedorController = new controller.ProvedorController();
+     List<model.Provedor> proveedores = provedorController.listarProvedores();
+
+     if (proveedores.isEmpty()) {
+         System.out.println("No hay proveedores registrados. Puede usar 0 para ninguno.");
+     } else {
+         for (model.Provedor p : proveedores) {
+             System.out.println("ID: " + p.getId() + " | Empresa: " + p.getNombreEmpresa());
+         }
+     }
+
+     System.out.print("ID del proveedor (0 si no tiene): ");
+     int proveedorId = sc.nextInt();
+     sc.nextLine();
+
+     System.out.print("Número de lote: ");
+     String lote = sc.nextLine();
+
+     System.out.print("Cantidad en stock: ");
+     int stock = sc.nextInt();
+
+     System.out.print("Stock mínimo para alerta: ");
+     int stockMinimo = sc.nextInt();
+     sc.nextLine();
+
+     System.out.print("Unidad de medida: ");
+     String unidad = sc.nextLine();
+
+     System.out.print("Fecha de vencimiento (YYYY-MM-DD, enter para omitir): ");
+     String fechaVencStr = sc.nextLine();
+     LocalDate fechaVencimiento = fechaVencStr.isEmpty() ? null : LocalDate.parse(fechaVencStr);
+
+     System.out.print("Precio de compra: ");
+     double precioCompra = sc.nextDouble();
+
+     System.out.print("Precio de venta: ");
+     double precioVenta = sc.nextDouble();
+
+     System.out.print("¿Requiere receta? (true/false): ");
+     boolean requiereReceta = sc.nextBoolean();
+     sc.nextLine();
+
+     LocalDateTime fechaRegistro = LocalDateTime.now();
+     boolean activo = true;
+
+     Inventario inv = new Inventario(nombre, tipoId, descripcion, fabricante, 
+                                   proveedorId == 0 ? null : proveedorId, lote, 
+                                   stock, stockMinimo, unidad, fechaVencimiento, 
+                                   precioCompra, precioVenta, requiereReceta, 
+                                   activo, fechaRegistro);
+     controller.agregarInventario(inv);
+ }
     
     private void listarInventario() {
         List<Inventario> lista = controller.listarInventario();
