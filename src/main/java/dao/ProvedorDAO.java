@@ -23,7 +23,7 @@ public class ProvedorDAO {
     
     // Método para agregar
     public void agregarProvedor(Provedor p) {
-        String sql = "INSERT INTO provedores (nombre_empresa, contacto, telefono, email, direccion, sitio_web)"
+        String sql = "INSERT INTO proveedores (nombre_empresa, contacto, telefono, email, direccion, sitio_web)"
                 + "VALUES (?,?,?,?,?,?)";
         try (Connection con = ConexionDB.getConexion();
                 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -45,7 +45,7 @@ public class ProvedorDAO {
     // Método para listar
     public List<Provedor> listarProvedores() {
         List<Provedor> lista = new ArrayList<>();
-        String sql = "SELECT * FROM provedores";
+        String sql = "SELECT * FROM proveedores";
         try (Connection con = ConexionDB.getConexion();
                 Statement st = con.createStatement();
                 ResultSet rs = st.executeQuery(sql)) {
@@ -73,7 +73,7 @@ public class ProvedorDAO {
     // Método para buscar por ID
     public Provedor buscarPorId(int id) {
         Provedor provedor = null;
-        String sql = "SELECT * FROM provedores WHERE id = ?";
+        String sql = "SELECT * FROM proveedores WHERE id = ?";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -104,7 +104,7 @@ public class ProvedorDAO {
     
     // Método para actualizar estado
     public void actualizarEstado(int id) {
-        String sql = "UPDATE provedores SET activo = NOT activo WHERE id = ?";
+        String sql = "UPDATE proveedores SET activo = NOT activo WHERE id = ?";
         
         try (Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql)) {
@@ -124,7 +124,7 @@ public class ProvedorDAO {
     // Método adicional: buscar por nombre (opcional, basado en el índice de la tabla)
     public List<Provedor> buscarPorNombre(String nombre) {
         List<Provedor> lista = new ArrayList<>();
-        String sql = "SELECT * FROM provedores WHERE nombre_empresa LIKE ?";
+        String sql = "SELECT * FROM proveedores WHERE nombre_empresa LIKE ?";
         
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
