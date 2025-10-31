@@ -5,20 +5,24 @@
 package view;
 
 import controller.InventarioController;
+import controller.ProductoTipoController;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 import model.Inventario;
+import model.ProductoTipo;
 
 public class InventarioVIEW {
     private InventarioController controller;
+    private ProductoTipoController tipoController;
     private Scanner sc;
     
     public InventarioVIEW() {
         int opcion = 0;
         sc = new Scanner(System.in);
         controller = new InventarioController();
+        tipoController = new ProductoTipoController();
         
         do {            
             System.out.println("\n--------- GESTIÓN DE INVENTARIO CLÍNICA ---------");
@@ -31,7 +35,8 @@ public class InventarioVIEW {
             System.out.println("7. Ver productos vencidos");
             System.out.println("8. Reporte completo de alertas");
             System.out.println("9. Actualizar stock");
-            System.out.println("10. Volver al menú principal");
+            System.out.println("10. Buscar productos por tipo");
+            System.out.println("11. Volver al menú principal");
             System.out.print("Seleccione una opción: ");
             opcion = sc.nextInt();
             sc.nextLine(); // Limpiar el buffer
@@ -72,8 +77,12 @@ public class InventarioVIEW {
                 case 9:
                     actualizarStock();
                     break;
-
+                    
                 case 10:
+                    buscarPorTipo();
+                    break;
+
+                case 11:
                     System.out.println("Volviendo al menú principal...");
                     return; 
                 
@@ -85,12 +94,35 @@ public class InventarioVIEW {
     
     private void agregarProducto() {
         System.out.println("\n--- AGREGAR NUEVO PRODUCTO AL INVENTARIO ---");
-        System.out.print("Nombre del producto: ");
-        String nombre = sc.nextLine();
         
-        System.out.print("Tipo de producto (ID): ");
+        // Mostrar tipos de producto disponibles
+        System.out.println("\n--- TIPOS DE PRODUCTO DISPONIBLES ---");
+        List<ProductoTipo> tipos = tipoController.listarProductoTipos();
+        if (tipos.isEmpty()) {
+            System.out.println("No hay tipos de producto registrados. Debe crear tipos primero.");
+            return;
+        }
+        
+        for (ProductoTipo tipo : tipos) {
+            System.out.println("ID: " + tipo.getId() + " - " + tipo.getNombre() + 
+                             " - " + tipo.getDescripcion());
+        }
+        
+        System.out.print("\nSeleccione el ID del tipo de producto: ");
         int tipoId = sc.nextInt();
         sc.nextLine();
+        
+        // Validar que el tipo existe
+        ProductoTipo tipoSeleccionado = tipoController.buscarPorId(tipoId);
+        if (tipoSeleccionado == null) {
+            System.out.println("Error: El ID de tipo de producto no existe.");
+            return;
+        }
+        
+        System.out.println("Tipo seleccionado: " + tipoSeleccionado.getNombre());
+        
+        System.out.print("Nombre del producto: ");
+        String nombre = sc.nextLine();
         
         System.out.print("Descripción: ");
         String descripcion = sc.nextLine();
@@ -147,8 +179,12 @@ public class InventarioVIEW {
         } else {
             System.out.println("\n--- INVENTARIO COMPLETO ---");
             for (Inventario inv : lista) {
+                // Obtener el nombre del tipo de producto
+                String nombreTipo = obtenerNombreTipo(inv.getProductoTipoId());
+                
                 System.out.println("ID: " + inv.getId());
                 System.out.println("Producto: " + inv.getNombreProducto());
+                System.out.println("Tipo: " + nombreTipo);
                 System.out.println("Stock: " + inv.getCantidadStock() + " " + inv.getUnidadMedida() + 
                                  " (Mín: " + inv.getStockMinimo() + ")");
                 System.out.println("Precio: $" + inv.getPrecioVenta());
@@ -168,6 +204,34 @@ public class InventarioVIEW {
         }
     }
     
+    private void buscarPorTipo() {
+        System.out.println("\n--- BUSCAR PRODUCTOS POR TIPO ---");
+        
+        // Mostrar tipos disponibles
+        System.out.println("Tipos de producto disponibles:");
+        List<ProductoTipo> tipos = tipoController.listarProductoTipos();
+        for (ProductoTipo tipo : tipos) {
+            System.out.println("ID: " + tipo.getId() + " - " + tipo.getNombre());
+        }
+        
+        System.out.print("Seleccione el ID del tipo: ");
+        int tipoId = sc.nextInt();
+        sc.nextLine();
+        
+        List<Inventario> productos = controller.buscarPorTipo(tipoId);
+        if (productos.isEmpty()) {
+            System.out.println("No hay productos de este tipo en el inventario.");
+        } else {
+            ProductoTipo tipo = tipoController.buscarPorId(tipoId);
+            System.out.println("\n--- PRODUCTOS DEL TIPO: " + tipo.getNombre() + " ---");
+            for (Inventario inv : productos) {
+                System.out.println("ID: " + inv.getId() + " - " + inv.getNombreProducto() + 
+                                 " - Stock: " + inv.getCantidadStock() + " " + inv.getUnidadMedida() +
+                                 " - Precio: $" + inv.getPrecioVenta());
+            }
+        }
+    }
+    
     private void actualizarEstado() {
         System.out.print("Ingrese el ID del producto cuyo estado desea actualizar: ");
         int id = sc.nextInt();
@@ -182,9 +246,12 @@ public class InventarioVIEW {
         sc.nextLine();
         Inventario inv = controller.buscarPorId(id);
         if (inv != null) {
+            String nombreTipo = obtenerNombreTipo(inv.getProductoTipoId());
+            
             System.out.println("\n=== INFORMACIÓN DEL PRODUCTO ===");
             System.out.println("ID: " + inv.getId());
             System.out.println("Nombre: " + inv.getNombreProducto());
+            System.out.println("Tipo: " + nombreTipo);
             System.out.println("Descripción: " + inv.getDescripcion());
             System.out.println("Fabricante: " + inv.getFabricante());
             System.out.println("Lote: " + inv.getLote());
@@ -196,6 +263,8 @@ public class InventarioVIEW {
             System.out.println("Activo: " + (inv.isActivo() ? "Sí" : "No"));
             if (inv.getFechaVencimiento() != null) {
                 System.out.println("Fecha vencimiento: " + inv.getFechaVencimiento());
+                System.out.println("Estado: " + (inv.estaVencido() ? "VENCIDO" : 
+                                              inv.estaProximoVencer() ? "PRÓXIMO A VENCER" : "VIGENTE"));
             }
         } else {
             System.out.println("No se encontró ningún producto con ese ID.");
@@ -209,7 +278,8 @@ public class InventarioVIEW {
         } else {
             System.out.println("\n⚠️  PRODUCTOS CON STOCK BAJO:");
             for (Inventario inv : stockBajo) {
-                System.out.println("• " + inv.getNombreProducto() + " - Stock: " + 
+                String nombreTipo = obtenerNombreTipo(inv.getProductoTipoId());
+                System.out.println("• " + inv.getNombreProducto() + " [" + nombreTipo + "] - Stock: " + 
                                  inv.getCantidadStock() + " (Mínimo: " + inv.getStockMinimo() + ")");
             }
         }
@@ -222,7 +292,8 @@ public class InventarioVIEW {
         } else {
             System.out.println("\n📅  PRODUCTOS PRÓXIMOS A VENCER (30 días):");
             for (Inventario inv : proximos) {
-                System.out.println("• " + inv.getNombreProducto() + " - Vence: " + 
+                String nombreTipo = obtenerNombreTipo(inv.getProductoTipoId());
+                System.out.println("• " + inv.getNombreProducto() + " [" + nombreTipo + "] - Vence: " + 
                                  inv.getFechaVencimiento() + " - Lote: " + inv.getLote());
             }
         }
@@ -235,7 +306,8 @@ public class InventarioVIEW {
         } else {
             System.out.println("\n❌  PRODUCTOS VENCIDOS (NO USAR):");
             for (Inventario inv : vencidos) {
-                System.out.println("• " + inv.getNombreProducto() + " - Venció: " + 
+                String nombreTipo = obtenerNombreTipo(inv.getProductoTipoId());
+                System.out.println("• " + inv.getNombreProducto() + " [" + nombreTipo + "] - Venció: " + 
                                  inv.getFechaVencimiento() + " - Lote: " + inv.getLote());
             }
         }
@@ -248,5 +320,11 @@ public class InventarioVIEW {
         int nuevaCantidad = sc.nextInt();
         sc.nextLine();
         controller.actualizarStock(id, nuevaCantidad);
+    }
+    
+    // Método auxiliar para obtener el nombre del tipo
+    private String obtenerNombreTipo(int tipoId) {
+        ProductoTipo tipo = tipoController.buscarPorId(tipoId);
+        return tipo != null ? tipo.getNombre() : "Tipo desconocido (ID: " + tipoId + ")";
     }
 }

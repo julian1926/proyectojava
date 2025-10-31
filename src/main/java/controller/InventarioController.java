@@ -7,6 +7,7 @@ package controller;
 import dao.InventarioDAO;
 import java.util.List;
 import model.Inventario;
+import model.ProductoTipo;
 
 /**
  *
@@ -65,6 +66,22 @@ public class InventarioController {
         return inventarioDAO.buscarPorTipo(tipoId);
     }
     
+    public void mostrarTiposParaSeleccion() {
+        ProductoTipoController tipoController = new ProductoTipoController();
+        List<ProductoTipo> tipos = tipoController.listarProductoTipos();
+
+        if (tipos.isEmpty()) {
+            System.out.println("No hay tipos de producto registrados.");
+            return;
+        }
+
+        System.out.println("\n--- SELECCIONE UN TIPO DE PRODUCTO ---");
+        for (ProductoTipo tipo : tipos) {
+            System.out.println("ID: " + tipo.getId() + " - " + tipo.getNombre() + 
+                             " - " + tipo.getDescripcion());
+        }
+    }
+
     // Método para generar reporte completo de alertas
     public void generarReporteAlertas() {
         System.out.println("\n=== REPORTE DE ALERTAS DEL INVENTARIO ===");
