@@ -14,8 +14,8 @@ import java.sql.SQLException;
  */
 public class ConexionDB {
     public static final String URL = "jdbc:mysql://localhost:3306/happy_feet_veterinaria";
-    public static final String USUARIO = "campus2023";
-    public static final String CONTRASENIA = "campus2023";
+    public static final String USUARIO = "root";
+    public static final String CONTRASENIA = "J4lian19";
     
     public static Connection getConexion (){
         Connection con = null;

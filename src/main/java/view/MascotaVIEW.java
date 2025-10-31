@@ -8,6 +8,8 @@ package view;
 import controller.MascotaController;
 import enums.Sexo;
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
@@ -46,8 +48,24 @@ public class MascotaVIEW {
                     System.out.println("Ingrese el ID de la raza: ");
                     int id_raza = sc.nextInt();
                     sc.nextLine();
-                    System.out.println("Ingrese la fecha de nacimiento de la mascota yy-mm-dd: ");
-                    Date fecha_nacimiento = Date.valueOf(sc.nextLine());
+                   // Validación de la fecha de contratación
+                    String fecha = "";
+                    Date fecha_nacimiento = null;
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    sdf.setLenient(false); // Para evitar fechas imposibles
+
+                    while (true) {
+                        System.out.println("Fecha de contratación (formato: yyyy-MM-dd): ");
+                        fecha = sc.nextLine();
+
+                        try {
+                            // Intentamos parsear la fecha
+                            fecha_nacimiento = new Date(sdf.parse(fecha).getTime());
+                            break; // Si la fecha es válida, salimos del bucle
+                        } catch (ParseException e) {
+                            System.out.println("Fecha inválida. Por favor, ingrese una fecha válida en formato yyyy-MM-dd.");
+                        }
+                    }
                     System.out.println("Sexo de la mascota(MACHO/HEMBRA): ");
                     Sexo sexo = Sexo.valueOf(sc.nextLine().toUpperCase());
                     System.out.println("Ingrese el peso actual: ");

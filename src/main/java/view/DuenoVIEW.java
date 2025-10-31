@@ -91,6 +91,8 @@ public class DuenoVIEW {
                         System.out.println("Nombre: " + dueno.getNombreCompleto());
                         System.out.println("Documento: " + dueno.getDocumentoIdentidad());
                         System.out.println("Teléfono: " + dueno.getTelefono());
+                        System.out.println("Dirección: " + dueno.getDireccion());
+                        System.out.println("Contacto de emergencia: " + dueno.getContactoEmergencia());
                         System.out.println("Email: " + dueno.getEmail());
                         System.out.println("Activo: " + (dueno.getEstado() ? "Sí" : "No"));
                     } else {
