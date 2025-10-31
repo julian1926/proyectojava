@@ -112,10 +112,10 @@ public class MascotaDAO {
     public Mascota buscarPorId(int id) {
         Mascota mascota = null;
 
-        String sql = "SELECT m.*, d.nombre AS nombre_dueno, r.nombre AS nombre_raza "
+        String sql = "SELECT m.*, d.nombre_completo AS nombre_dueno, r.nombre AS nombre_raza "
                    + "FROM mascotas m "
                    + " JOIN duenos d ON m.dueno_id = d.id "
-                   + " JOIN JOIN razas r ON m.raza_id = r.id "
+                   + " JOIN razas r ON m.raza_id = r.id "
                    + "WHERE m.id = ?";
 
         try (Connection con = ConexionDB.getConexion();

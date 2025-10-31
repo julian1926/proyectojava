@@ -73,5 +73,14 @@ public class Cita {
         this.estado = estado;  
     }
     
+    public void setMascota_nombre(String mascota_nombre) {
+    this.mascota_nombre = mascota_nombre;
+    }
+
+    public void setVeterinario_nombre(String veterinario_nombre) {
+      this.veterinario_nombre = veterinario_nombre;
+    }
+
+    
     
 }

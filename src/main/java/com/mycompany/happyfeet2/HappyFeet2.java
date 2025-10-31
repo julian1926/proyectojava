@@ -4,11 +4,12 @@
 
 package com.mycompany.happyfeet2;
 
-import view.VeterinarioVIEW;
+import view.ConsultaMedicaVIEW;
 
 public class HappyFeet2 {
     public static void main(String[] args) {
         // Instancia de la vista
-        new VeterinarioVIEW(); // al instanciar, el constructor ya lanza el menú
+        ConsultaMedicaVIEW vista = new ConsultaMedicaVIEW();
+        vista.mostrarMenu(); // aquí se lanza el menú
     }
 }

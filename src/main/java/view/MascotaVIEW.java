@@ -4,8 +4,9 @@
  */
 package view;
 
-
 import controller.MascotaController;
+import controller.EspecieCONTROLLER;
+import dao.RazaDAO;
 import enums.Sexo;
 import java.sql.Date;
 import java.text.ParseException;
@@ -13,7 +14,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
+import model.Especie;
 import model.Mascota;
+import model.Razas;
 
 /**
  *
@@ -22,13 +25,13 @@ import model.Mascota;
 public class MascotaVIEW {
     private MascotaController controller;
     private Scanner sc;
-    
-    public MascotaVIEW(){
+
+    public MascotaVIEW() {
         int opcion = 0;
         sc = new Scanner(System.in);
         controller = new MascotaController();
-        
-        do {            
+
+        do {
             System.out.println("-------- Gestion De Mascotas --------");
             System.out.println("1. Agregar");
             System.out.println("2. Listar");
@@ -37,65 +40,95 @@ public class MascotaVIEW {
             System.out.println("5. Volver Al Menu Principal");
             opcion = sc.nextInt();
             sc.nextLine();
-            
+
             switch (opcion) {
                 case 1:
                     System.out.println("Ingrese el ID del dueño: ");
                     int id_dueno = sc.nextInt();
                     sc.nextLine();
+
                     System.out.println("Ingrese el nombre de la mascota: ");
                     String nombre = sc.nextLine();
-                    System.out.println("Ingrese el ID de la raza: ");
-                    int id_raza = sc.nextInt();
+
+                    // -------------------- Selección de especie --------------------
+                    EspecieCONTROLLER especieController = new EspecieCONTROLLER();
+                    List<Especie> especies = especieController.listarEspecie();
+                    System.out.println("Selecciona la especie de la mascota:");
+                    for (Especie e : especies) {
+                        System.out.println(e.getId() + ". " + e.getNombre() + " - " + e.getDescripcion());
+                    }
+                    int idEspecie = sc.nextInt();
                     sc.nextLine();
-                   // Validación de la fecha de contratación
+                    Especie especieSeleccionada = null;
+                    for (Especie e : especies) {
+                        if (e.getId() == idEspecie) {
+                            especieSeleccionada = e;
+                            break;
+                        }
+                    }
+
+                    // -------------------- Creación de nueva raza --------------------
+                    System.out.println("Ingrese el nombre de la nueva raza: ");
+                    String nombreRaza = sc.nextLine();
+                    System.out.println("Ingrese las características de la raza: ");
+                    String caracteristicas = sc.nextLine();
+                    Razas raza = new Razas(0, nombreRaza, caracteristicas, especieSeleccionada);
+                    RazaDAO razaDAO = new RazaDAO();
+                    int idRaza = razaDAO.agregarRaza(raza);
+
+                    // -------------------- Fecha de nacimiento --------------------
                     String fecha = "";
                     Date fecha_nacimiento = null;
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    sdf.setLenient(false); // Para evitar fechas imposibles
-
+                    sdf.setLenient(false);
                     while (true) {
-                        System.out.println("Fecha de contratación (formato: yyyy-MM-dd): ");
+                        System.out.println("Fecha de nacimiento (formato: yyyy-MM-dd): ");
                         fecha = sc.nextLine();
-
                         try {
-                            // Intentamos parsear la fecha
                             fecha_nacimiento = new Date(sdf.parse(fecha).getTime());
-                            break; // Si la fecha es válida, salimos del bucle
+                            break;
                         } catch (ParseException e) {
-                            System.out.println("Fecha inválida. Por favor, ingrese una fecha válida en formato yyyy-MM-dd.");
+                            System.out.println("Fecha inválida. Por favor, ingrese una fecha válida.");
                         }
                     }
-                    System.out.println("Sexo de la mascota(MACHO/HEMBRA): ");
+
+                    System.out.println("Sexo de la mascota (MACHO/HEMBRA): ");
                     Sexo sexo = Sexo.valueOf(sc.nextLine().toUpperCase());
+
                     System.out.println("Ingrese el peso actual: ");
                     double peso = sc.nextDouble();
                     sc.nextLine();
-                    System.out.println("Ingrese el microchip (o 'Ninguno' si no tiene): ");
+
+                    System.out.println("Ingrese el microchip: ");
                     String microchip = sc.nextLine();
+
                     System.out.println("Ingrese el tatuaje (o 'Ninguno' si no tiene): ");
                     String tatuaje = sc.nextLine();
+
                     System.out.println("Ingrese la URL de la foto: ");
                     String url_foto = sc.nextLine();
+
                     System.out.println("Ingrese alergias: ");
                     String alergias = sc.nextLine();
+
                     System.out.println("Ingrese condiciones preexistentes: ");
                     String condiciones = sc.nextLine();
-                    
+
                     LocalDateTime fecha_registro = LocalDateTime.now();
                     boolean activo = true;
-                    
-                    Mascota m = new Mascota(id_dueno, nombre, id_raza, fecha_nacimiento, sexo, peso,
+
+                    Mascota m = new Mascota(id_dueno, nombre, idRaza, fecha_nacimiento, sexo, peso,
                             microchip, tatuaje, url_foto, alergias, condiciones, fecha_registro, activo);
-                    
+
                     controller.agregarMascota(m);
+                    System.out.println("Mascota agregada correctamente con nueva raza.");
                     break;
-                    
+
                 case 2:
                     List<Mascota> lista = controller.listarMascotas();
-                    if(lista.isEmpty()){
-                        System.out.println("La lista de mascotas esta vacia...");
-                    }else{
+                    if (lista.isEmpty()) {
+                        System.out.println("La lista de mascotas está vacía...");
+                    } else {
                         System.out.println("-------- LISTA DE MASCOTAS --------");
                         for (Mascota mascota : lista) {
                             System.out.println("");
@@ -113,11 +146,11 @@ public class MascotaVIEW {
                             System.out.println("Condiciones preexistentes: " + mascota.getCondiciones_preexistentes());
                             System.out.println("Fecha de registro: " + mascota.getFecha_registro());
                             System.out.println("Activo: " + (mascota.getActivo() ? "Sí" : "No"));
-                            System.out.println("--------------------------------------"); 
+                            System.out.println("--------------------------------------");
                         }
                     }
                     break;
-                    
+
                 case 3:
                     System.out.println("Ingrese el ID de la mascota para modificar el estado: ");
                     int id = sc.nextInt();
@@ -125,13 +158,13 @@ public class MascotaVIEW {
                     controller.actualizarEstado(id);
                     System.out.println("Estado actualizado!!!");
                     break;
-                    
+
                 case 4:
                     System.out.println("Ingrese el ID de la mascota a buscar: ");
                     int id_mascota = sc.nextInt();
                     sc.nextLine();
                     Mascota mascota = controller.buscarPorId(id_mascota);
-                    if(mascota != null){
+                    if (mascota != null) {
                         System.out.println("----- INFORMACION DE LA MASCOTA -----");
                         System.out.println("");
                         System.out.println("Nombre: " + mascota.getNombre());
@@ -148,18 +181,17 @@ public class MascotaVIEW {
                         System.out.println("Fecha de registro: " + mascota.getFecha_registro());
                         System.out.println("Activo: " + (mascota.getActivo() ? "Sí" : "No"));
                         System.out.println("--------------------------------------");
-                    }else{
+                    } else {
                         System.out.println("No hay ninguna mascota con ese ID.");
                     }
-                    
                     break;
-                
+
                 case 5:
                     System.out.println("Volviendo al menu principal....");
                     return;
-                    
+
                 default:
-                    System.out.println("Opcion imvalida. Intente nuevamente.");
+                    System.out.println("Opción inválida. Intente nuevamente.");
             }
         } while (true);
     }
