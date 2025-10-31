@@ -17,7 +17,7 @@ import util.ConexionDB;
 
 /**
  *
- * @author camper
+ * @author sd
  */
 public class DuenoDAO {
     
